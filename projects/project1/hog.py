@@ -328,7 +328,15 @@ def make_averaged(original_function, trials_count=1000):
     3.0
     """
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    assert trials_count >=1, 'must call original function once ' 
+    def return_function(*args):             
+        count ,result =1,0 
+        while count <= trials_count:                #call original function trails_count times, add them up as result
+            result += original_function(*args)             
+            count +=1
+        result= result /trials_count                # take average
+        return result
+    return return_function
     # END PROBLEM 8
 
 
@@ -342,7 +350,16 @@ def max_scoring_num_rolls(dice=six_sided, trials_count=1000):
     1
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    nums_roll = 1
+    max_result =0    
+    while nums_roll <= 10:
+        average_roll = make_averaged(roll_dice,trials_count)
+        curr = average_roll(nums_roll,dice)
+        if curr > max_result:
+            max_result = curr   #update max result
+            max_roll = nums_roll  #update max_roll
+        nums_roll +=1               #increment
+    return max_roll
     # END PROBLEM 9
 
 
@@ -367,14 +384,14 @@ def average_win_rate(strategy, baseline=always_roll(6)):
 
 def run_experiments():
     """Run a series of strategy experiments and report results."""
-    if True:  # Change to False when done finding max_scoring_num_rolls
+    if  False:  # Change to False when done finding max_scoring_num_rolls
         six_sided_max = max_scoring_num_rolls(six_sided)
         print('Max scoring num rolls for six-sided dice:', six_sided_max)
-
+    
     if False:  # Change to True to test always_roll(8)
         print('always_roll(8) win rate:', average_win_rate(always_roll(8)))
 
-    if False:  # Change to True to test bacon_strategy
+    if True:  # Change to True to test bacon_strategy
         print('bacon_strategy win rate:', average_win_rate(bacon_strategy))
 
     if False:  # Change to True to test extra_turn_strategy
@@ -386,13 +403,15 @@ def run_experiments():
     "*** You may add additional experiments as you wish ***"
 
 
-
 def bacon_strategy(score, opponent_score, cutoff=8, num_rolls=6):
     """This strategy rolls 0 dice if that gives at least CUTOFF points, and
     rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 6  # Replace this statement
+    bacon_score = free_bacon(opponent_score)
+    if bacon_score >= cutoff:
+        return 0
+    return num_rolls  # Replace this statement
     # END PROBLEM 10
 
 
@@ -402,7 +421,10 @@ def extra_turn_strategy(score, opponent_score, cutoff=8, num_rolls=6):
     Otherwise, it rolls NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 6  # Replace this statement
+    if extra_turn(score+free_bacon(opponent_score),opponent_score):
+        return 0
+    else:
+        return bacon_strategy(score,opponent_score,cutoff,num_rolls)
     # END PROBLEM 11
 
 
