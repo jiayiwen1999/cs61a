@@ -170,21 +170,25 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
 
         if who ==0:                   #player 0 turn
             score0 += take_turn(strategy0(score0,score1),score1,dice)
+            # we first call say function, then set a new say function as the return of previous one. This should happen before extra turn since we want to cal say every turn
+            say =say(score0,score1)         
             if extra_turn(score0,score1):           #check extra turn
+                
                 continue
 
         else:                         #player 1 turn 
             score1 += take_turn(strategy1(score1,score0),score0,dice)
-            print("Debug: score1 = ",score1)
+            # we first call say function, then set a new say function as the return of previous one. This should happen before extra turn since we want to cal say every turn
+            say = say(score0,score1)
             if extra_turn(score1,score0):           #check extra turn
                 continue
         who = other(who)                     #switch player
-    return score0, score1
+    
     
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
-    "*** YOUR CODE HERE ***"
+    
     # END PROBLEM 6
     return score0, score1
 
@@ -268,7 +272,23 @@ def announce_highest(who, last_score=0, running_high=0):
     """
     assert who == 0 or who == 1, 'The who argument should indicate a player.'
     # BEGIN PROBLEM 7
-    "*** YOUR CODE HERE ***"
+    now = running_high
+    def say(score0,score1):
+        if who ==0:
+            curr = score0 - last_score
+            if now < curr:
+                print(curr, "point(s)! The most yet for Player 0")
+                return announce_highest(who,score0,curr)
+            else:
+                return announce_highest(who,score0,now)
+        else:
+            curr = score1 - last_score
+            if now < curr:
+                print(curr, "point(s)! The most yet for Player 1")
+                return announce_highest(who,score1, curr)
+            else:
+                return announce_highest(who,score1,now)
+    return say
     # END PROBLEM 7
 
 
