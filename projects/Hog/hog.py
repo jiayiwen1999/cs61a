@@ -434,7 +434,22 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
-    return 6  # Replace this statement
+    if abs(score-opponent_score) <10:
+        extra_turn_strategy(score,opponent_score,score-opponent_score,5)
+    if opponent_score>70 and abs(score-opponent_score) <20:
+        return 7
+    if score<70 and abs(score-opponent_score) <20:
+        return 6
+    if score>70 and abs(score-opponent_score) >10:
+        return 5
+    if score>70 and score <=90:
+        return extra_turn_strategy(score,opponent_score,10)
+    if score>90:
+        if free_bacon(opponent_score)+score>=100:
+            return 0
+        else:
+            return extra_turn_strategy(score,opponent_score,100-score)
+    return 5
     # END PROBLEM 12
 
 ##########################
