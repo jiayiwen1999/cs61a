@@ -22,8 +22,12 @@ def num_eights(x):
     ...       ['Assign', 'AugAssign'])
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    if x==0:
+        return 0
+    if x%10 == 8:
+        return 1+num_eights(x//10)
+    
+    return num_eights(x//10)
 
 def pingpong(n):
     """Return the nth element of the ping-pong sequence.
@@ -57,8 +61,28 @@ def pingpong(n):
     >>> check(HW_SOURCE_FILE, 'pingpong', ['Assign', 'AugAssign'])
     True
     """
-    "*** YOUR CODE HERE ***"
+    if n==0:
+        return 0
+    def change_direction(direction):
+        if direction ==1:
+            return -1
+        else:
+            return 1
+    
+    def helper(n,num,count,direction):
+        print("DEBUG: ", num,count, direction)
+        if count == n:
+            return num
+        else:
+            if num_eights(count+1)>0 or (count+1) % 8 ==0:        #change direction in this case
+                return helper(n,num+direction,count+1,change_direction(direction))
+            else:
+                return helper(n,num+direction,count+1,direction)
+    print("DEBUG: ",helper(n,1,1,1))
+    return helper(n,1,1,1)
 
+    
+        
 
 def missing_digits(n):
     """Given a number a that is in sorted, increasing order,
@@ -87,7 +111,13 @@ def missing_digits(n):
     >>> check(HW_SOURCE_FILE, 'missing_digits', ['While', 'For'])
     True
     """
-    "*** YOUR CODE HERE ***"
+    if n <10:
+        return 0
+    else:
+        if n%10-(n//10)%10==0 or n%10-(n//10)%10 ==1:
+            return missing_digits(n//10)
+        else:
+            return missing_digits(n//10)+(n%10-(n//10)%10-1)
 
 
 def next_largest_coin(coin):
@@ -123,7 +153,19 @@ def count_coins(total):
     >>> check(HW_SOURCE_FILE, 'count_coins', ['While', 'For'])                                          
     True
     """
-    "*** YOUR CODE HERE ***"
+    def helper(total,coin):
+        if total ==0:
+            print("DEBUG: count+1")
+            return 1
+        if total<0:
+            return 0
+        if coin ==None :
+            return 0
+        without_coin = helper(total,next_largest_coin(coin))
+        with_coin = helper(total-coin,coin)
+        return with_coin+without_coin
+    return helper(total,1)
+    
 
 
 from operator import sub, mul
@@ -138,5 +180,8 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    return (lambda f:lambda k: f(f,k))(lambda x,y: y if y==1 else mul(y,x(x,sub(y,1))))
 
+    # the first part (lambda f:lambda k: f(f,k)) is a recursive function that take two arguments, the first one is the function itself, the second one is the actual parameter we used
+    # the second part (lambda x,y: y if y==1 else mul(y,x(x,sub(y,1)))) is the factorial function, where we call function X if our parameter is not yet 1
+    
