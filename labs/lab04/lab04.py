@@ -114,12 +114,15 @@ def max_subseq(n, t):
     >>> max_subseq(12345, 1)
     5
     """
-    def helper(n,t):
-        max=0
-        if n==0:
-            return max 
-        return max
-  
+    if t==0:
+        return 0            #when t= 0, we have no choice 
+    if n< 10**(t-1):
+        return n            # when number of digits of n is less than t, we return n
+    if max_subseq(n//10,t) >= max_subseq(n//10,t-1)*10+n%10:    #check whether we should include the last digit or not 
+        return max_subseq(n//10,t)
+    else:
+        return max_subseq(n//10,t-1)*10+n%10
+        
     
 def add_chars(w1, w2):
     """
@@ -147,5 +150,14 @@ def add_chars(w1, w2):
     ...       ['For', 'While', 'Set', 'SetComp']) # Must use recursion
     True
     """
-    "*** YOUR CODE HERE ***"
+    if  w2=='':                     # when w2 is empty we are done. Notice that it is possible that w1 is empty, but we need to return w2. So w1 cannot determine when to end 
+        return ''
+    else:
+        if w1[0]==w2[0]:                    # check whether the first char match 
+            if len(w1) ==1:             # if w1 has just one char, then return the rest of w2
+                return w2[1:]
+            else:    
+                return add_chars(w1[1:],w2[1:])                 #otherwise, we remove the first chars of w1 and w2
+        else:                           #if the first char not match, then we concat the first char of w2 with add_char(w1, the rest of w2)
+            return w2[0]+add_chars(w1,w2[1:])
 
