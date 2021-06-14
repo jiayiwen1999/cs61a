@@ -16,7 +16,13 @@ def choose(paragraphs, select, k):
     the empty string.
     """
     # BEGIN PROBLEM 1
-    "*** YOUR CODE HERE ***"
+    count =0
+    for paragraph in paragraphs:    
+        if select(paragraph) == True:       
+            if count ==k:
+                return paragraph
+            count +=1           # The reason we increment after we check the condition is K counts from 0 ( K represents the index of the paragraph in the list of selected paragraphs)
+    return ''
     # END PROBLEM 1
 
 
@@ -32,7 +38,16 @@ def about(topic):
     """
     assert all([lower(x) == x for x in topic]), 'topics should be lowercase.'
     # BEGIN PROBLEM 2
-    "*** YOUR CODE HERE ***"
+    topic_list = topic
+    def select_from_topic(paragraph):
+        word_list = [lower(word) for word in split(remove_punctuation(paragraph))]
+        
+        for word in word_list:
+            for topics in topic_list:
+                if word == topics:
+                    return True
+        return False
+    return select_from_topic
     # END PROBLEM 2
 
 
@@ -56,7 +71,12 @@ def accuracy(typed, reference):
     typed_words = split(typed)
     reference_words = split(reference)
     # BEGIN PROBLEM 3
-    "*** YOUR CODE HERE ***"
+    if len(typed_words) == 0: return 0.0
+    count_accurate = 0
+    for x,y in zip(typed_words,reference_words):
+        if x == y:
+            count_accurate+=1    
+    return (count_accurate /len(typed_words))*100 
     # END PROBLEM 3
 
 
@@ -64,7 +84,8 @@ def wpm(typed, elapsed):
     """Return the words-per-minute (WPM) of the TYPED string."""
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
-    "*** YOUR CODE HERE ***"
+    # counts number of character typed including spaces and we consider the average length of a word is 5 characters. Notice that the input elapsed is in seconds. The result is in "word(5 charchters)" per minute.
+    return (len(typed)/5) /(elapsed/60)
     # END PROBLEM 4
 
 
