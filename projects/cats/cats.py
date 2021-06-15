@@ -168,7 +168,17 @@ def final_diff(start, goal, limit):
 def report_progress(typed, prompt, user_id, send):
     """Send a report of your id and progress so far to the multiplayer server."""
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    count_accurate = 0
+    for x,y in zip(typed,prompt):
+        if x == y:
+            count_accurate+=1    
+        else:
+            break
+        
+    progress = count_accurate /len(prompt)
+    send({'id':user_id, 'progress': progress})
+
+    return progress
     # END PROBLEM 8
 
 
@@ -194,7 +204,13 @@ def time_per_word(times_per_player, words):
         words: a list of words, in the order they are typed.
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    result = list(range(len(times_per_player)))         #create a list with length of numbers of players
+    for i in range(len(times_per_player)):              
+        time_for_palyer_i = []                          # for each player, create a list that contains the time for each word 
+        for j in range(len(times_per_player[i])-1):
+            time_for_palyer_i += [times_per_player[i][j+1]-times_per_player[i][j]]      
+        result[i]=time_for_palyer_i                     # update the result list
+    return game(words,result)
     # END PROBLEM 9
 
 
@@ -209,7 +225,22 @@ def fastest_words(game):
     player_indices = range(len(all_times(game)))  # contains an *index* for each player
     word_indices = range(len(all_words(game)))    # contains an *index* for each word
     # BEGIN PROBLEM 10
-    "*** YOUR CODE HERE ***"
+    # We give each word an index of player who type fastest
+    player_for_each_word = list(word_indices)
+    for word in word_indices:     
+        min_index = 0                   #the min index of player for current word
+        min_time = time(game,0,word)        # keep track of min time for current word
+        for player in player_indices:          # iterate over all player
+            if min_time >time(game,player,word):
+                min_time = time(game,player,word)
+                min_index = player
+        player_for_each_word[word] = min_index      # update the min index for current word
+
+    # Now, we generate a list of word for each player typed fastest
+    result = list(player_indices)           #our result list, where the length is the same as number of players
+    for player in player_indices:
+        result[player] = [word_at(game,word) for word in word_indices if player_for_each_word[word] == player ]             #look for all words that this player typed fastest among the all and put them into a list
+    return result
     # END PROBLEM 10
 
 
