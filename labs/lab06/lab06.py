@@ -16,8 +16,12 @@ def make_adder_inc(a):
     >>> adder2(5)
     11
     """
-    "*** YOUR CODE HERE ***"
-
+    count = -1
+    def adder(x):
+        nonlocal count
+        count+=1
+        return x+a+count
+    return adder
 
 def make_fib():
     """Returns a function that returns the next Fibonacci number
@@ -42,7 +46,21 @@ def make_fib():
     >>> check(this_file, 'make_fib', ['List'])
     True
     """
-    "*** YOUR CODE HERE ***"
+    prev = 0
+    curr = -1
+    def fib():
+        nonlocal prev,curr
+        # Special case
+        if curr ==-1:
+            curr =1 
+            return 0
+        # every time, we want to return the current value. But in order to update the information before return, we use temp as a place holder of current value
+        temp = curr 
+        curr += prev 
+        prev = temp
+        return temp
+    return fib
+    
 
 
 def insert_items(lst, entry, elem):
@@ -61,5 +79,14 @@ def insert_items(lst, entry, elem):
     >>> large_lst3 is large_lst
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    length = len(lst)
+    index = 0
+    while(length >0):
+        if lst[index] == entry:
+            lst.insert(index+1,elem)
+            length -=1
+            index +=2
+        else:
+            length -=1
+            index +=1
+    return lst
