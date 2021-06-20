@@ -162,6 +162,8 @@ class ThrowerAnt(Ant):
     implemented = True
     damage = 1
     food_cost = 3 
+    min_range = 0
+    max_range = float('inf')  #by default the throwant has no max range 
 
     def nearest_bee(self, beehive):
         """Return the nearest Bee in a Place that is not the HIVE (beehive), connected to
@@ -170,24 +172,32 @@ class ThrowerAnt(Ant):
         This method returns None if there is no such Bee (or none in range).
         """
         # BEGIN Problem 3 and 4
-        curr_place = self.place
-        while curr_place.bees == []:            
-            if curr_place.entrance.name != 'Hive' :
-                curr_place = curr_place.entrance
-            else:
+        curr_place = self.place             # track current place 
+        result = []                         # result 
+        count =1                            # count the distance of next place
+        if self.min_range ==0:              # if we can throw at current place, check whether there is bees or not
+            result = curr_place.bees
+
+        while result == []:                 # else, we update the result until is non-empty list or we meet the hive
+            if curr_place.entrance == beehive:      # if next is hive, return None 
                 return None
-        return rANTdom_else_none(curr_place.bees)
+            curr_place = curr_place.entrance        # else, we update current place and check whether it is in range or not 
+            if self.min_range <= count <= self.max_range:
+                result = curr_place.bees            # update the result if in range
+            count +=1                               # increment distance
+        return rANTdom_else_none(result)
         # END Problem 3 and 4
 
     def throw_at(self, target):
         """Throw a leaf at the TARGET Bee, reducing its armor."""
         if target is not None:
+            print("DEBUG: throw")
             target.reduce_armor(self.damage)
 
     def action(self, gamestate):
         """Throw a leaf at the nearest Bee in range."""
         self.throw_at(self.nearest_bee(gamestate.beehive))
-
+        print("DEBUG: called throw at",self.nearest_bee(gamestate.beehive))
 def rANTdom_else_none(s):
     """Return a random element of sequence S, or return None if S is empty."""
     assert isinstance(s, list), "rANTdom_else_none's argument should be a list but was a %s" % type(s).__name__
@@ -204,8 +214,10 @@ class ShortThrower(ThrowerAnt):
     name = 'Short'
     food_cost = 2
     # OVERRIDE CLASS ATTRIBUTES HERE
+    max_range =3 
     # BEGIN Problem 4
-    implemented = False   # Change to True to view in the GUI
+    implemented = True  # Change to True to view in the GUI
+
     # END Problem 4
 
 class LongThrower(ThrowerAnt):
@@ -215,7 +227,8 @@ class LongThrower(ThrowerAnt):
     food_cost = 2
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 4
-    implemented = False   # Change to True to view in the GUI
+    implemented = True
+    min_range = 5   # Change to True to view in the GUI
     # END Problem 4
 
 class FireAnt(Ant):
@@ -226,7 +239,7 @@ class FireAnt(Ant):
     food_cost = 5
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 5
-    implemented = False   # Change to True to view in the GUI
+    implemented = True  # Change to True to view in the GUI
     # END Problem 5
 
     def __init__(self, armor=3):
@@ -241,7 +254,15 @@ class FireAnt(Ant):
         if the fire ant dies.
         """
         # BEGIN Problem 5
-        "*** YOUR CODE HERE ***"
+        bees_in_place = self.place.bees[:]              # create a copy of bee list to iterate
+        if amount >= self.armor:                        # IF THE FIREANT WILL DIE
+            for bee in bees_in_place:
+                Insect.reduce_armor(bee,amount+self.damage)
+        else:                                           # IF THE FIREANT WON'T DIE 
+            for bee in bees_in_place:
+                Insect.reduce_armor(bee,amount)
+        Ant.reduce_armor(self,amount)
+
         # END Problem 5
 
 class HungryAnt(Ant):
