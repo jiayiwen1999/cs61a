@@ -273,28 +273,43 @@ class HungryAnt(Ant):
     food_cost = 4
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 6
-    implemented = False   # Change to True to view in the GUI
+    time_to_digest =3
+    implemented = True  # Change to True to view in the GUI
     # END Problem 6
 
     def __init__(self, armor=1):
         # BEGIN Problem 6
-        "*** YOUR CODE HERE ***"
+        self.digesting = 0                              # so that each ant has a digesting timer
+        Ant.__init__(self,armor)
         # END Problem 6
 
     def eat_bee(self, bee):
         # BEGIN Problem 6
-        "*** YOUR CODE HERE ***"
+        Bee.reduce_armor(bee,bee.armor)                 # reduce all armor of the bee 
+        self.digesting = self.time_to_digest            # set digesting 
         # END Problem 6
 
     def action(self, gamestate):
         # BEGIN Problem 6
-        "*** YOUR CODE HERE ***"
+        bee_list = self.place.bees                      
+        if len(bee_list) ==0:                           # if there is no bee, do nothing
+            return
+
+        if self.digesting == 0:                         # else check digesting 
+            self.eat_bee(rANTdom_else_none(bee_list))
+        else:
+            self.digesting -= 1
         # END Problem 6
 
 
 
 # BEGIN Problem 7
-# The WallAnt class
+class WallAnt(Ant):
+    implemented = True
+    food_cost = 4
+    name = 'Wall'
+    def __init__(self,armor =4):
+        Ant.__init__(self,armor)
 # END Problem 7
 
 
