@@ -105,6 +105,7 @@ class Ant(Insect):
     implemented = False  # Only implemented Ant classes should be instantiated
     food_cost = 0
     blocks_path = True
+    is_container = False 
     # ADD CLASS ATTRIBUTES HERE
 
     def __init__(self, armor=1):
@@ -126,12 +127,19 @@ class Ant(Insect):
             place.ant = self
         else:
             # BEGIN Problem Optional 2
-            assert place.ant is None, 'Two ants in {0}'.format(place)
+            if self.can_contain(place.ant):
+                ant = place.ant
+                place.ant = self
+                self.contain_ant(ant)
+            elif place.ant.can_contain(self):
+                place.ant.contain_ant(self)
+            else:
+                assert place.ant is None, 'Two ants in {0}'.format(place)
             # END Problem Optional 2
         Insect.add_to(self, place)
 
     def remove_from(self, place):
-        if place.ant is self:
+        if place.ant is self and self.is_container == False :
             place.ant = None
         elif place.ant is None:
             assert False, '{0} is not in {1}'.format(self, place)
@@ -479,18 +487,19 @@ class NinjaAnt(Ant):
         # END Problem Optional 1
 
 class ContainerAnt(Ant):
+    is_container = True
     def __init__(self, *args, **kwargs):
         Ant.__init__(self, *args, **kwargs)
         self.contained_ant = None
 
     def can_contain(self, other):
         # BEGIN Problem Optional 2
-        "*** YOUR CODE HERE ***"
+        return self.contained_ant == None and other.is_container == False
         # END Problem Optional 2
 
     def contain_ant(self, ant):
         # BEGIN Problem Optional 2
-        "*** YOUR CODE HERE ***"
+        self.contained_ant = ant
         # END Problem Optional 2
 
     def remove_ant(self, ant):
@@ -510,7 +519,8 @@ class ContainerAnt(Ant):
 
     def action(self, gamestate):
         # BEGIN Optional 2
-        "*** YOUR CODE HERE ***"
+        if self.contained_ant != None:
+            self.contained_ant.action(gamestate)
         # END Optional 2
 
 class BodyguardAnt(ContainerAnt):
@@ -520,8 +530,10 @@ class BodyguardAnt(ContainerAnt):
     food_cost = 4
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Optional 2
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Optional 2
+    def __init__(self, armor = 2 ):
+        ContainerAnt.__init__(self,armor)
 
 class TankAnt(ContainerAnt):
     """TankAnt provides both offensive and defensive capabilities."""
