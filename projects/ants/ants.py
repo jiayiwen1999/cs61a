@@ -661,7 +661,6 @@ class LaserAnt(ThrowerAnt):
         result = {}
         # when the next place is not hive, we add insects
         while curr_place != beehive:
-            print("DEBUG: in loop")
             # check ants and this ant cannot be itself
             if curr_place.ant != None and curr_place.ant != self :  
                 result [curr_place.ant] =distance_from_laser
