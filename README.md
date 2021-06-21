@@ -8,6 +8,6 @@ Begin date: Jun.10.2021
 
 <b>Typing Accuracy Check and Auto-correction (Cats): </b> A program that allows to compute typing speed, typing accuracy, and automatically correct wrong words.
 
-<b>Ants vs bees: </b> This is a game that is similar to the famous video game <b><i> "Plants vs Zombies"</b></i>. 
+<b>Ants vs bees(Ants): </b> This is a game that is similar to the famous video game <b><i> "Plants vs Zombies"</b></i>. 
 
 <b> Lab 05 </b>: Include a function called add_trees that can merge two trees by adding their value at each node. Including a function called random_sent that can generate arbitrary sentence from shakespeare.
