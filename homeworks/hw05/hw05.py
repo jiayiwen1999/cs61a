@@ -35,7 +35,39 @@ class VendingMachine:
     >>> w.vend()
     'Here is your soda.'
     """
-    "*** YOUR CODE HERE ***"
+    def __init__(self,name,price):
+        self.name = name
+        self.price = price
+        self.inventory = 0
+        self.fund =0
+    def vend(self):
+        if self.inventory == 0:
+            if self.fund ==0:
+                return 'Inventory empty. Restocking required.'
+            else:
+                return 'Inventory empty. Restocking required. Here is your $'+str(self.fund) +'.'
+        elif self.fund == self.price:
+            self.fund =0
+            self.inventory -=1
+            return 'Here is your ' + self.name +'.'
+        elif self.fund > self.price:
+            change = self.fund -self.price
+            self.fund =0 
+            self.inventory -=1
+            return 'Here is your ' + self.name + ' and $' + str(change)+' change.'
+        else:
+            need = self.price - self.fund
+            return 'You must add $'+str(need)+ ' more funds.'
+    def restock(self,number):
+        assert number >0, 'must restock at least an item'
+        self.inventory += number
+        return 'Current '+self.name +' stock: ' + str(self.inventory)
+    def add_funds(self,amount):
+        if self.inventory != 0:
+            self.fund += amount
+            return 'Current balance: $' + str(self.fund)
+        else:
+            return 'Inventory empty. Restocking required. Here is your $' + str(amount)+'.'
 
 
 class Mint:
@@ -73,17 +105,21 @@ class Mint:
         self.update()
 
     def create(self, kind):
-        "*** YOUR CODE HERE ***"
+        return kind(self.year)
+        
 
     def update(self):
-        "*** YOUR CODE HERE ***"
+        self.year = Mint.current_year
 
 class Coin:
     def __init__(self, year):
         self.year = year
 
     def worth(self):
-        "*** YOUR CODE HERE ***"
+        if (Mint.current_year-self.year)-50 >=0:
+            return self.cents + (Mint.current_year-self.year)-50
+        else:
+            return self.cents
 
 class Nickel(Coin):
     cents = 5
@@ -107,7 +143,23 @@ def store_digits(n):
     >>> cleaned = re.sub(r"#.*\\n", '', re.sub(r'"{3}[\s\S]*?"{3}', '', inspect.getsource(store_digits)))
     >>> print("Do not use str or reversed!") if any([r in cleaned for r in ["str", "reversed"]]) else None
     """
-    "*** YOUR CODE HERE ***"
+    # a helper function to count the number of digits in n 
+    def length(n):
+        count =1
+        while not (10 ** (count-1) <= n <10**count):
+            count+=1
+        return count
+    
+    power = length(n)-1                                         # to which power of 10 we should divide in order to get the first digit of n 
+    head,n = Link(n// (10**power)), n%(10**power)               # create a linked list whose value is the first digit of n and update n
+    curr = head                                                 # use curr to keep track of our place in the linked list 
+    power -=1                                                   # decrement power to keep track of the digits
+    while power >= 0:                                           
+        curr.rest, n = Link(n// (10**power)),n%(10**power)      # similar as the first case, and update curr & power
+        curr = curr.rest
+        power -=1
+
+    return head
 
 
 def is_bst(t):
@@ -134,10 +186,31 @@ def is_bst(t):
     >>> t7 = Tree(2, [Tree(1, [Tree(5)]), Tree(4)])
     >>> is_bst(t7)
     False
-    """
-    "*** YOUR CODE HERE ***"
-
-
+    """ 
+    # helper function that return extremes of a tree
+    def t_min(t):
+        tmin = t.label
+        if t.is_leaf():
+            return tmin
+        return min([tmin]+[t_min(branch) for branch in t.branches])
+    def t_max(t):
+        tmax = t.label
+        if t.is_leaf():
+            return tmax
+        return max([tmax]+[t_max(branch) for branch in t.branches])
+    
+    # body of is_bst
+    if t.is_leaf():
+            return True
+    else:
+        if len(t.branches) ==1:
+            return True and all([is_bst(branch) for branch in t.branches])
+        elif len(t.branches) ==2 and (t_max(t.branches[0]) <= t_min(t.branches[1])):
+            return True and all([is_bst(branch) for branch in t.branches])
+                
+        else:
+            return False
+    
 def preorder(t):
     """Return a list of the entries in this tree in the order that they
     would be visited by a preorder traversal (see problem description).
@@ -148,7 +221,14 @@ def preorder(t):
     >>> preorder(Tree(2, [Tree(4, [Tree(6)])]))
     [2, 4, 6]
     """
-    "*** YOUR CODE HERE ***"
+    result = []
+    if t.is_leaf():
+        return [t.label]
+    else:
+        result += [t.label]
+        for branch in t.branches:
+            result += preorder(branch)
+    return result
 
 
 def path_yielder(t, value):
@@ -187,11 +267,13 @@ def path_yielder(t, value):
     """
 
     "*** YOUR CODE HERE ***"
-
-    for _______________ in _________________:
-        for _______________ in _________________:
-
-            "*** YOUR CODE HERE ***"
+    result = [t.label]
+    if t.label == value:
+        yield result
+    else:
+        if not t.is_leaf():
+            for branch in t.branches:
+                yield result + path_yielder(branch,value)
 
 
 class Link:
