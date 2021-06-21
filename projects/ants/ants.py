@@ -104,6 +104,7 @@ class Ant(Insect):
 
     implemented = False  # Only implemented Ant classes should be instantiated
     food_cost = 0
+    blocks_path = True
     # ADD CLASS ATTRIBUTES HERE
 
     def __init__(self, armor=1):
@@ -305,14 +306,14 @@ class HungryAnt(Ant):
 
 
 
-# BEGIN Problem 7
+
 class WallAnt(Ant):
     implemented = True
     food_cost = 4
     name = 'Wall'
     def __init__(self,armor =4):
         Ant.__init__(self,armor)
-# END Problem 7
+
 
 
 class Water(Place):
@@ -327,18 +328,13 @@ class Water(Place):
             Insect.reduce_armor(insect,insect.armor)
         # END Problem 8
 
-# BEGIN Problem 9
-# The ScubaThrower class
 class ScubaThrower(ThrowerAnt):
     food_cost = 6
     is_watersafe = True
     name = 'Scuba'
     implemented = True
-# END Problem 9
 
-# BEGIN Problem EC
-class QueenAnt(ScubaThrower):  # You should change this line
-# END Problem EC
+class QueenAnt(ScubaThrower):  
     """The Queen of the colony. The game is over if a bee enters her place."""
 
     name = 'Queen'
@@ -429,6 +425,8 @@ class Bee(Insect):
         """Return True if this Bee cannot advance to the next Place."""
         # Special handling for NinjaAnt
         # BEGIN Problem Optional
+        if self.place.ant != None:
+            return self.place.ant.blocks_path
         return self.place.ant is not None
         # END Problem Optional
 
@@ -469,13 +467,15 @@ class NinjaAnt(Ant):
     damage = 1
     food_cost = 5
     # OVERRIDE CLASS ATTRIBUTES HERE
-    # BEGIN Problem Optional 1
-    implemented = False   # Change to True to view in the GUI
-    # END Problem Optional 1
+    blocks_path = False 
+    implemented = True  # Change to True to view in the GUI
+    
 
     def action(self, gamestate):
         # BEGIN Problem Optional 1
-        "*** YOUR CODE HERE ***"
+        bee_list = self.place.bees[:]
+        for bee in bee_list:
+            Insect.reduce_armor(bee,self.damage)
         # END Problem Optional 1
 
 class ContainerAnt(Ant):
