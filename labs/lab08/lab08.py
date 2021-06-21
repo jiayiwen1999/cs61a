@@ -7,7 +7,14 @@ def convert_link(link):
     >>> convert_link(Link.empty)
     []
     """
-    "*** YOUR CODE HERE ***"
+    result = []
+    if link == Link.empty:
+        return []
+    else: 
+        result += [link.first]
+        if link.rest != Link.empty:
+            result += convert_link(link.rest)
+    return result 
 
 
 def every_other(s):
@@ -27,8 +34,18 @@ def every_other(s):
     >>> singleton
     Link(4)
     """
-    "*** YOUR CODE HERE ***"
-
+    index = 0
+    curr = s 
+    while curr.rest != Link.empty:
+        if index % 2 ==0:
+            if curr.rest.rest == Link.empty:
+                curr.rest = Link.empty
+                break
+            else:
+                curr.rest = curr.rest.rest
+                curr = curr.rest
+        else:
+            curr = curr.rest
 
 def cumulative_mul(t):
     """Mutates t so that each node's label becomes the product of all labels in
@@ -39,7 +56,15 @@ def cumulative_mul(t):
     >>> t
     Tree(105, [Tree(15, [Tree(5)]), Tree(7)])
     """
-    "*** YOUR CODE HERE ***"
+    if t.is_leaf():
+       return 
+    else:
+        for b in t.branches:
+            cumulative_mul(b)
+            t.label *= b.label
+        return  
+    
+            
 
 
 def has_cycle(link):
@@ -56,8 +81,17 @@ def has_cycle(link):
     >>> has_cycle(u)
     False
     """
-    "*** YOUR CODE HERE ***"
-
+    # Linear Space Solution: use a set or a dictionary to keep track of the link objects that we have seen
+    link_showed = {}
+    curr = link 
+    while curr != Link.empty:
+        if curr not in link_showed:
+            link_showed[curr]=0
+            curr = curr.rest
+        else:
+            return True
+    return False
+    
 def has_cycle_constant(link):
     """Return whether link contains a cycle.
 
@@ -69,7 +103,17 @@ def has_cycle_constant(link):
     >>> has_cycle_constant(t)
     False
     """
-    "*** YOUR CODE HERE ***"
+    if link == Link.empty:
+        return False
+    else:
+        begin = link                    # first pointer that never move 
+        curr = link.rest                # second pointer that iterate over the link 
+        while curr != Link.empty:
+            if begin == curr:
+                return True
+            else:
+                curr = curr.rest
+        return False
 
 
 def reverse_other(t):
@@ -85,8 +129,24 @@ def reverse_other(t):
     >>> t
     Tree(1, [Tree(8, [Tree(3, [Tree(5), Tree(4)]), Tree(6, [Tree(7)])]), Tree(2)])
     """
-    "*** YOUR CODE HERE ***"
+    def helper(t,count):
+        if t.is_leaf():
+            return
+        else:
+            branches_label =[branch.label for branch in t.branches]
+        if count % 2 == 0:                  # reverse branches if current level is even, which means the branches level is odd
+            length = len(branches_label)-1
+            i=0
+            while length >=0:
+                t.branches[i].label = branches_label[length]
+                i+=1
+                length -=1
+        for branch in t.branches:
+            helper(branch,count+1)
 
+                
+
+    return helper(t,0)
 
 class Link:
     """A linked list.
@@ -109,7 +169,6 @@ class Link:
     <5 7 <8 9>>
     """
     empty = ()
-
     def __init__(self, first, rest=empty):
         assert rest is Link.empty or isinstance(rest, Link)
         self.first = first
