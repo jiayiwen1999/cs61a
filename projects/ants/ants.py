@@ -202,13 +202,11 @@ class ThrowerAnt(Ant):
     def throw_at(self, target):
         """Throw a leaf at the TARGET Bee, reducing its armor."""
         if target is not None:
-            print("DEBUG: throw")
             target.reduce_armor(self.damage)
 
     def action(self, gamestate):
         """Throw a leaf at the nearest Bee in range."""
         self.throw_at(self.nearest_bee(gamestate.beehive))
-        print("DEBUG: called throw at",self.nearest_bee(gamestate.beehive))
 def rANTdom_else_none(s):
     """Return a random element of sequence S, or return None if S is empty."""
     assert isinstance(s, list), "rANTdom_else_none's argument should be a list but was a %s" % type(s).__name__
@@ -418,6 +416,11 @@ class Bee(Insect):
     damage = 1
     # OVERRIDE CLASS ATTRIBUTES HERE
     is_watersafe = True
+    
+    def __init__(self, armor):
+        Insect.__init__(self,armor)
+        self.go_forward = True
+        self.scared = False
 
 
     def sting(self, ant):
@@ -447,7 +450,11 @@ class Bee(Insect):
         destination = self.place.exit
         # Extra credit: Special handling for bee direction
         # BEGIN EC
-        "*** YOUR CODE HERE ***"
+        if self.go_forward == False :
+            destination = self.place.entrance
+            if destination == gamestate.beehive:
+                destination == None
+            self.go_forward = True
         # END EC
         if self.blocked():
             self.sting(self.place.ant)
@@ -566,7 +573,10 @@ def make_slow(action, bee):
     action -- An action method of some Bee
     """
     # BEGIN Problem Optional 4
-    "*** YOUR CODE HERE ***"
+    def new_action(gamestate):
+        if gamestate.time % 2 == 0:
+            return  action(gamestate)
+    return new_action
     # END Problem Optional 4
 
 def make_scare(action, bee):
@@ -575,13 +585,27 @@ def make_scare(action, bee):
     action -- An action method of some Bee
     """
     # BEGIN Problem Optional 4
-    "*** YOUR CODE HERE ***"
+    def new_action(gamestate):
+        bee.go_forward = False
+        return action(gamestate)
+    return new_action
     # END Problem Optional 4
 
 def apply_status(status, bee, length):
     """Apply a status to a BEE that lasts for LENGTH turns."""
     # BEGIN Problem Optional 4
-    "*** YOUR CODE HERE ***"
+    old_action = bee.action
+    # status is either make_slow or make_scare
+    new_action = status(bee.action,bee)
+    def new_act(gamestate):
+        nonlocal length
+        if length >0:
+            new_action(gamestate)
+            length -=1
+        else:
+            bee.go_forward = True                           # we are allowed to set this manually because a bee can only be scared once.
+            old_action(gamestate)
+    bee.action = new_act
     # END Problem Optional 4
 
 
@@ -591,7 +615,7 @@ class SlowThrower(ThrowerAnt):
     name = 'Slow'
     food_cost = 4
     # BEGIN Problem Optional 4
-    implemented = False   # Change to True to view in the GUI
+    implemented = True  # Change to True to view in the GUI
     # END Problem Optional 4
 
     def throw_at(self, target):
@@ -605,12 +629,14 @@ class ScaryThrower(ThrowerAnt):
     name = 'Scary'
     food_cost = 6
     # BEGIN Problem Optional 4
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem Optional 4
 
     def throw_at(self, target):
         # BEGIN Problem Optional 4
-        "*** YOUR CODE HERE ***"
+        if target and target.scared == False :
+            apply_status(make_scare,target,2)
+            target.scared = True
         # END Problem Optional 4
 
 class LaserAnt(ThrowerAnt):
@@ -618,9 +644,10 @@ class LaserAnt(ThrowerAnt):
 
     name = 'Laser'
     food_cost = 10
+    damage =2 
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem Optional 5
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem Optional 5
 
     def __init__(self, armor=1):
@@ -629,12 +656,28 @@ class LaserAnt(ThrowerAnt):
 
     def insects_in_front(self, beehive):
         # BEGIN Problem Optional 5
-        return {}
+        distance_from_laser = 0
+        curr_place = self.place 
+        result = {}
+        # when the next place is not hive, we add insects
+        while curr_place != beehive:
+            print("DEBUG: in loop")
+            # check ants and this ant cannot be itself
+            if curr_place.ant != None and curr_place.ant != self :  
+                result [curr_place.ant] =distance_from_laser
+            # check bees
+            if curr_place.bees != []:
+                for bee in curr_place.bees:
+                    result[bee] = distance_from_laser
+            curr_place = curr_place.entrance 
+            distance_from_laser +=1
+        return result
         # END Problem Optional 5
 
     def calculate_damage(self, distance):
         # BEGIN Problem Optional 5
-        return 0
+        result = self.damage - 0.2 * distance - 0.05 * self.insects_shot
+        return result
         # END Problem Optional 5
 
     def action(self, gamestate):
