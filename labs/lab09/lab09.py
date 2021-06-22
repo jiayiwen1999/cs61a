@@ -7,7 +7,7 @@ def insert_into_all(item, nested_list):
     >>> insert_into_all(0, nl)
     [[0], [0, 1, 2], [0, 3]]
     """
-    return ______________________________
+    return [[item]+ lst for lst in nested_list]
 
 def subseqs(s):
     """Assuming that S is a list, return a nested list of all subsequences
@@ -19,11 +19,13 @@ def subseqs(s):
     >>> subseqs([])
     [[]]
     """
-    if ________________:
-        ________________
+    if len(s)==0:
+        return [[]]
+    if len(s)== 1:
+        return [[],s]
     else:
-        ________________
-        ________________
+        w_first = insert_into_all(s[0],subseqs(s[1:]))
+        return w_first + subseqs(s[1:])
 
 
 def inc_subseqs(s):
@@ -40,16 +42,17 @@ def inc_subseqs(s):
     >>> sorted(seqs2)
     [[], [1], [1], [1, 1], [1, 1, 2], [1, 2], [1, 2], [2]]
     """
+    if s == []: return [[]]
     def subseq_helper(s, prev):
         if not s:
-            return ____________________
+            return [[]]
         elif s[0] < prev:
-            return ____________________
+            return subseq_helper(s[1:],prev)
         else:
-            a = ______________________
-            b = ______________________
-            return insert_into_all(________, ______________) + ________________
-    return subseq_helper(____, ____)
+            a = subseq_helper(s[1:],prev)
+            b = subseq_helper(s[1:],s[0])
+            return insert_into_all(s[0],b)+a
+    return subseq_helper(s,min(s))
 
 
 def num_trees(n):
@@ -72,9 +75,9 @@ def num_trees(n):
     429
 
     """
-    if ____________________:
-        return _______________
-    return _______________
+    if n == 1 or n==2:
+        return 1
+    return sum([num_trees(i)*num_trees(n-i) for i in range(1,n)])
 
 
 def make_generators_generator(g):
@@ -112,16 +115,15 @@ def make_generators_generator(g):
     9
     """
     def gen(i):
-        for ___________ in ___________:
-            if _________________________:
-                _________________________
-            _______________________
-            _______________________
-    __________________________
-    for _________ in __________________:
-        ______________________________
-        ______________________________
-
+        for entry in g():
+            if i<=0:
+                return
+            yield entry
+            i -= 1
+    i =1 
+    for entry in g():
+        yield gen(i)
+        i+=1
 
 class Button:
     """
@@ -159,26 +161,25 @@ class Keyboard:
     """
 
     def __init__(self, *args):
-        ________________
-        for _________ in ________________:
-            ________________
+        self.buttons ={}
+        for button in args:
+            self.buttons[button.pos]= button
 
     def press(self, info):
         """Takes in a position of the button pressed, and
         returns that button's output"""
-        if ____________________:
-            ________________
-            ________________
-            ________________
-        ________________
+        if info in self.buttons:
+            self.buttons[info].times_pressed +=1
+            return self.buttons[info].key
+        return ''
 
     def typing(self, typing_input):
         """Takes in a list of positions of buttons pressed, and
         returns the total output"""
-        ________________
-        for ________ in ____________________:
-            ________________
-        ________________
+        output =''
+        for info in typing_input:
+            output += self.press(info)
+        return output
 
 
 def make_advanced_counter_maker():
@@ -210,16 +211,23 @@ def make_advanced_counter_maker():
     >>> tom_counter('global-count')
     1
     """
-    ________________
-    def ____________(__________):
-        ________________
-        def ____________(__________):
-            ________________
-            "*** YOUR CODE HERE ***"
-            # as many lines as you want
-        ________________
-    ________________
-
+    global_count = 0                        
+    def global_counter():
+        count =0
+        def local(message):
+            nonlocal global_count,count 
+            if message == 'count':
+                count +=1
+                return count
+            elif message == 'global-count':
+                global_count +=1
+                return global_count
+            elif message == 'reset':
+                count =0 
+            elif message == 'global-reset':
+                global_count =0
+        return local
+    return global_counter
 
 def trade(first, second):
     """Exchange the smallest prefixes of first and second that have equal sum.
@@ -250,14 +258,13 @@ def trade(first, second):
     """
     m, n = 1, 1
 
-    equal_prefix = lambda: ______________________
-    while _______________________________:
-        if __________________:
+    equal_prefix = lambda: sum(first[:m])-sum(second [:n])
+    while equal_prefix() and (m<len(first) and n < len(second)):
+        if equal_prefix() <0:
             m += 1
         else:
             n += 1
-
-    if equal_prefix():
+    if not equal_prefix():
         first[:m], second[:n] = second[:n], first[:m]
         return 'Deal!'
     else:
@@ -289,11 +296,11 @@ def shuffle(cards):
     ['A♡', 'A♢', 'A♤', 'A♧', '2♡', '2♢', '2♤', '2♧', '3♡', '3♢', '3♤', '3♧']
     """
     assert len(cards) % 2 == 0, 'len(cards) must be even'
-    half = _______________
+    card_list= list(cards)
+    half = card_list[(len(card_list)//2):]
     shuffled = []
-    for i in _____________:
-        _________________
-        _________________
+    for i in range(len(card_list)//2):
+        shuffled += [card_list[i],half[i]]        
     return shuffled
 
 
@@ -312,14 +319,16 @@ def insert(link, value, index):
     >>> insert(link, 4, 5)
     IndexError
     """
-    if ____________________:
-        ____________________
-        ____________________
-        ____________________
-    elif ____________________:
-        ____________________
+    assert not index<0, 'index cannot be negative'
+    if index ==0:
+        temp = link.first 
+        link.first = value
+        link.rest = Link(temp,link.rest)
+        return 
+    elif link.rest != Link.empty:
+        insert(link.rest,value, index-1)
     else:
-        ____________________
+        raise IndexError
 
 
 
@@ -337,12 +346,12 @@ def deep_len(lnk):
     >>> deep_len(levels)
     5
     """
-    if ______________:
+    if lnk == Link.empty:
         return 0
-    elif ______________:
+    elif not isinstance(lnk,Link):
         return 1
     else:
-        return _________________________
+        return deep_len(lnk.first)+deep_len(lnk.rest)
 
 
 def make_to_string(front, mid, back, empty_repr):
@@ -361,10 +370,10 @@ def make_to_string(front, mid, back, empty_repr):
     '()'
     """
     def printer(lnk):
-        if ______________:
-            return _________________________
+        if lnk == Link.empty:
+            return empty_repr
         else:
-            return _________________________
+            return front + str(lnk.first) + mid+printer(lnk.rest)+ back
     return printer
 
 
@@ -385,11 +394,11 @@ def prune_small(t, n):
     >>> t3
     Tree(6, [Tree(1), Tree(3, [Tree(1), Tree(2)])])
     """
-    while ___________________________:
-        largest = max(_______________, key=____________________)
-        _________________________
-    for __ in _____________:
-        ___________________
+    while len(t.branches) >n:
+        largest = max(t.branches, key=lambda x: x.label)            # get the largest label and remove this branch 
+        t.branches.remove(largest)
+    for branch in t.branches:
+        prune_small(branch,n)                                       # iterate over all branches
 
 
 class Link:
