@@ -2,17 +2,16 @@
 
 
 CREATE TABLE average_prices AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT category, AVG(MSRP) as average_price from products group by category;
 
 
 CREATE TABLE lowest_prices AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
-
+  SELECT store,item,min(price) from inventory group by item;
 
 CREATE TABLE shopping_list AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT item as item_name,store as store_name from lowest_prices,products where item = name group by category having min(MSRP/rating) ;
 
 
 CREATE TABLE total_bandwidth AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT sum(Mbs) from stores,shopping_list where store = store_name;
 
