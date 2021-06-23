@@ -1,7 +1,10 @@
 # cs61a
 Self-study project following https://inst.eecs.berkeley.edu/~cs61a/fa20/ <br />
 This repository is used to record the labs and projects that I have done in this process. <br />
-Begin date: Jun.10.2021
+The course has a primary focus on python and object-oriented programming. The first half of the course is about python including the first three projects (Hog, Cats, Ants). At the meantime, some basic data structures and algorithm are introduced/implemented using python. The second half of the course introduce scheme and sql. <br />
+
+Begin Date: Jun.10.2021  
+End Date: 
 
 # Interesting Assignment (Preview)
 <b >Rolling Dice Game (Hog):  </b> A game of rolling dices between two players. One can play against the other or against the computer.
