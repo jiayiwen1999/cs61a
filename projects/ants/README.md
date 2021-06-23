@@ -1,12 +1,12 @@
 # Ants vs Bees
 
 This is a game that is similar to <b><i> Plants vs Zombies </b></i>. The player will need to use their ants to defend the bees. If any of the bees goes to the left end of the screen or the bees kill the Queen Ant, then the bees win. If all bees are killed by ants, then the player win. 
-
-To start the game, type the following code in your terminal: python3 ants_gui.py [-h] [-d DIFFICULTY] [-w] [--food FOOD]
--h: the helper document of the game
--d: choose the DIFFICULTY as the follows easy/medium/hard/extra-har
--w: play with water
---food: choose the default amount of FOOD
+<br/>
+To start the game, type the following code in your terminal: python3 ants_gui.py [-h] [-d DIFFICULTY] [-w] [--food FOOD]<br/>
+-h: the helper document of the game<br/>
+-d: choose the DIFFICULTY as the follows easy/medium/hard/extra-har<br/>
+-w: play with water<br/>
+--food: choose the default amount of FOOD<br/>
 
 # Place
 The colony has two kinds. One is land, and the other is water. Most of the ants can be placed on lands but not water. 
