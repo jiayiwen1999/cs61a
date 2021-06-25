@@ -613,4 +613,5 @@ def tscheme_write_to_file(path):
 @builtin("print-then-return")
 def scheme_print_return(val1, val2):
     print(repl_str(val1))
+    print("DEBUG: print-then-return")
     return val2
