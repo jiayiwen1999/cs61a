@@ -88,6 +88,19 @@ class Pair(object):
             return scheme_append(mapped, self.rest.flatmap(fn))
         else:
             raise TypeError('ill-formed list (cdr is a promise)')
+   
+    # This is a function that turn pairs(shceme list) into python list
+    def pair2list(self):
+        python_args =[]
+            
+        def helper(args):
+            nonlocal python_args
+            while args != nil:
+                python_args += [args.first]
+                return helper(args.rest)
+        
+        helper(self)
+        return python_args
 
 
 class nil(object):
