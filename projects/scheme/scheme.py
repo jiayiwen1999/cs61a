@@ -72,7 +72,13 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 7
-    return scheme_eval(expressions.first, env) # replace this with lines of your own code
+    if expressions == nil:
+        return None                                         # if an empty expression is passed in, then return None
+    elif expressions.rest == nil:                           # if this is the last expression, then we evaluate and return it 
+        return scheme_eval(expressions.first, env)
+    else:                                                   # otherwise, we evaluate the current expression and recursively evaluate the rest 
+        scheme_eval(expressions.first, env)                 
+        return eval_all(expressions.rest,env)
     # END PROBLEM 7
 
 ################
@@ -259,7 +265,10 @@ def do_define_form(expressions, env):
         # END PROBLEM 5
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
-        "*** YOUR CODE HERE ***"
+        expr = Pair (target.rest, expressions.rest)         # create a scheme list where the first is the formals and the rest is the body
+        lambda_pro = do_lambda_form(expr,env)               # create the lambda procedure
+        env.define(target.first,lambda_pro)                 # bind in the frame 
+        return target.first
         # END PROBLEM 9
     else:
         bad_target = target.first if isinstance(target, Pair) else target
@@ -300,7 +309,7 @@ def do_lambda_form(expressions, env):
     formals = expressions.first
     validate_formals(formals)
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    return LambdaProcedure(formals,expressions.rest,env)
     # END PROBLEM 8
 
 def do_if_form(expressions, env):
