@@ -1,5 +1,6 @@
 """A Scheme interpreter and its read-eval-print loop."""
-from __future__ import print_function  # Python 2 compatibility
+from __future__ import print_function
+from array import array  # Python 2 compatibility
 
 import sys
 import os
@@ -130,7 +131,16 @@ class Frame(object):
         if len(formals) != len(vals):
             raise SchemeError('Incorrect number of arguments to function call')
         # BEGIN PROBLEM 10
-        "*** YOUR CODE HERE ***"
+        child_frame = Frame(self)
+        # if we have empty scheme list, then we return child frame directly. Otherwise, we do bindings
+        if formals != nil:
+            # turn pairs into python list and use zip function to help us do bindings by iteration
+            python_formals = formals.pair2list()
+            python_vals = vals.pair2list()
+            zip_pairs = zip(python_formals,python_vals)
+            for x,y in zip_pairs:
+                child_frame.define(x,y)
+        return child_frame    
         # END PROBLEM 10
 
 ##############
@@ -169,13 +179,8 @@ class BuiltinProcedure(Procedure):
         python_args = []
         # BEGIN PROBLEM 3
         # define a helper function to turn pairs into python list 
-        def pair2list(args):
-            nonlocal python_args
-            while args != nil:
-                python_args += [args.first]
-                return pair2list(args.rest)
-        
-        pair2list(args)                 # call the helper function and check whether env should be added or not 
+        if args != nil:
+            python_args=args.pair2list()
         if self.use_env:
             python_args += [env]
             
