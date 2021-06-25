@@ -406,7 +406,6 @@ def do_cond_form(expressions, env):
             if clause.rest == nil:
                 return test
             else:
-                print("DEBUG: before eval")
                 return eval_all(clause.rest,env)
             # END PROBLEM 13
         expressions = expressions.rest
