@@ -36,7 +36,10 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
         return SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 4
-        "*** YOUR CODE HERE ***"
+        proced = scheme_eval(first,env)
+        validate_procedure(proced)
+        lst = rest.map(lambda x : scheme_eval(x,env))
+        return scheme_apply(proced,lst,env)
         # END PROBLEM 4
 
 def self_evaluating(expr):
@@ -93,13 +96,16 @@ class Frame(object):
     def define(self, symbol, value):
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        self.bindings[symbol]= value
         # END PROBLEM 2
 
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        if symbol in self.bindings:
+            return self.bindings[symbol]
+        elif self.parent != None:
+            return self.parent.lookup(symbol)
         # END PROBLEM 2
         raise SchemeError('unknown identifier: {0}'.format(symbol))
 
@@ -156,7 +162,17 @@ class BuiltinProcedure(Procedure):
         # Convert a Scheme list to a Python list
         python_args = []
         # BEGIN PROBLEM 3
-        "*** YOUR CODE HERE ***"
+        # define a helper function to turn pairs into python list 
+        def pair2list(args):
+            nonlocal python_args
+            while args != nil:
+                python_args += [args.first]
+                return pair2list(args.rest)
+        
+        pair2list(args)                 # call the helper function and check whether env should be added or not 
+        if self.use_env:
+            python_args += [env]
+            
         # END PROBLEM 3
         try:
             return self.fn(*python_args)
@@ -238,7 +254,8 @@ def do_define_form(expressions, env):
     if scheme_symbolp(target):
         validate_form(expressions, 2, 2) # Checks that expressions is a list of length exactly 2
         # BEGIN PROBLEM 5
-        "*** YOUR CODE HERE ***"
+        env.define(target,scheme_eval(expressions.rest.first,env))
+        return target
         # END PROBLEM 5
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
@@ -476,8 +493,7 @@ def validate_formals(formals):
 def validate_procedure(procedure):
     """Check that PROCEDURE is a valid Scheme procedure."""
     if not scheme_procedurep(procedure):
-        raise SchemeError('{0} is not callable: {1}'.format(
-            type(procedure).__name__.lower(), repl_str(procedure)))
+        raise SchemeError('{0} is not callable: {1}'.format(type(procedure).__name__.lower(), repl_str(procedure)))
 
 #################
 # Dynamic Scope #
